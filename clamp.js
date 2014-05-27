@@ -20,7 +20,8 @@
             opt = {
                 clamp:              options.clamp || 2,
                 useNativeClamp:     typeof(options.useNativeClamp) != 'undefined' ? options.useNativeClamp : true,
-                truncationChar:     options.truncationChar || '…'
+                truncationChar:     options.truncationChar || '…',
+				removeTrailingChars: options.removeTrailingChars || ',.;:!?-'
             },
 
             sty = element.style,
@@ -167,9 +168,7 @@
         }
         
         function applyEllipsis(elem, str) {
-        	var removeChars = ',.;:!?-';
-        	
-        	while (str.length && removeChars.indexOf(str[str.length-1]) != -1) {
+        	while (str.length && opt.removeTrailingChars.indexOf(str[str.length-1]) != -1) {
             	str = str.substring(0, str.length -1);
             }
         	
