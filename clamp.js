@@ -1,5 +1,5 @@
 /*!
-* Clamp.js 0.6.0
+* Clamp.js 0.6.1
 *
 * Copyright 2011-2013, Joseph Schmitt http://joe.sh
 * Released under the WTFPL license
