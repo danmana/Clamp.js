@@ -43,7 +43,7 @@ based solution.
 after truncation is performed. This defaults to an ellipsis (…).
 
 
-#Deprecated Options (do not work anymore)
+#Deprecated Options
 
 
 **truncationHTML** _(String)_.
