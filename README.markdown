@@ -22,6 +22,8 @@ The $clamp method is the primary way of interacting with Clamp.js, and it takes 
 arguments. The first is the element which should be clamped, and the second is an
 Object with options in JSON notation.
 
+The algorithms splits the text into words (separated by spaces), and searches using binary search for the best split index. All words after this are removed and replaced with a truncationChar. For the last word, the characters set in removeTrainingChars will be trimmed from the end.
+
 
 # Options
 
@@ -41,6 +43,9 @@ based solution.
 
 **truncationChar** _(String)_. The character to insert at the end of the HTML element
 after truncation is performed. This defaults to an ellipsis (…).
+
+**removeTrailingChars** _(String)_. The characters that will get removed from the last word. This defaults to ',.;:!?-'
+
 
 
 #Deprecated Options
