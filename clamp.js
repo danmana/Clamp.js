@@ -123,13 +123,13 @@
          */
         function getLastChild(elem) {
             //Current element has children, need to go deeper and get last child as a text node
-            if (elem.lastChild.children && elem.lastChild.children.length > 0) {
+            if (elem.lastChild && elem.lastChild.children && elem.lastChild.children.length > 0) {
                 return getLastChild(Array.prototype.slice.call(elem.children).pop());
             }
             //This is the absolute last child, a text node, but something's wrong with it. Remove it and keep trying
             else if (!elem.lastChild || !elem.lastChild.nodeValue || elem.lastChild.nodeValue == '' || elem.lastChild.nodeValue == opt.truncationChar) {
                 elem.lastChild.parentNode.removeChild(elem.lastChild);
-                return getLastChild(element);
+                return getLastChild(elem);
             }
             //This is the last child we want, return it
             else {
@@ -144,87 +144,31 @@
         function truncate(target, maxHeight) {
             if (!maxHeight) {return;}
             
-            /**
-             * Resets global variables.
-             */
-            function reset() {
-                splitOnChars = opt.splitOnChars.slice(0);
-                splitChar = splitOnChars[0];
-                chunks = null;
-                lastChunk = null;
-            }
-            
-            var nodeValue = target.nodeValue.replace(opt.truncationChar, '');
-            
-            //Grab the next chunks
-            if (!chunks) {
-                //If there are more characters to try, grab the next one
-                if (splitOnChars.length > 0) {
-                    splitChar = splitOnChars.shift();
-                }
-                //No characters to chunk by. Go character-by-character
-                else {
-                    splitChar = '';
-                }
-                
-                chunks = nodeValue.split(splitChar);
-            }
-            
-            //If there are chunks left to remove, remove the last one and see if
-            // the nodeValue fits.
-            if (chunks.length > 1) {
-                // console.log('chunks', chunks);
-                lastChunk = chunks.pop();
-                // console.log('lastChunk', lastChunk);
-                applyEllipsis(target, chunks.join(splitChar));
-            }
-            //No more chunks can be removed using this character
-            else {
-                chunks = null;
-            }
-            
-            //Insert the custom HTML before the truncation character
-            if (truncationHTMLContainer) {
-                target.nodeValue = target.nodeValue.replace(opt.truncationChar, '');
-                element.innerHTML = target.nodeValue + ' ' + truncationHTMLContainer.innerHTML + opt.truncationChar;
-            }
-
-            //Search produced valid chunks
-            if (chunks) {
-                //It fits
-                if (getElemHeight(element) <= maxHeight) {
-                    //There's still more characters to try splitting on, not quite done yet
-                    if (splitOnChars.length >= 0 && splitChar != '') {
-                        applyEllipsis(target, chunks.join(splitChar) + splitChar + lastChunk);
-                        chunks = null;
-                    }
-                    //Finished!
-                    else {
-                        return element.innerHTML;
-                    }
-                }
-            }
-            //No valid chunks produced
-            else {
-                //No valid chunks even when splitting by letter, time to move
-                //on to the next node
-                if (splitChar == '') {
-                    applyEllipsis(target, '');
-                    target = getLastChild(element);
-                    
-                    reset();
-                }
-            }
-            
-            //If you get here it means still too big, let's keep truncating
-            if (opt.animate) {
-                setTimeout(function() {
-                    truncate(target, maxHeight);
-                }, opt.animate === true ? 10 : opt.animate);
-            }
-            else {
-                return truncate(target, maxHeight);
-            }
+            var original = target.nodeValue.replace(opt.truncationChar, '');
+			var start = 0, mid = -1, m;
+			var end = original.length - 1;
+			var height = getElemHeight(element);
+			
+			while (start <= end && end > 0) {
+				m = Math.floor((start + end) / 2);
+				if (m == mid) {
+					break;
+				}
+				mid = m;
+				applyEllipsis(target, original.substring(0, mid+1));
+				height = getElemHeight(element);
+				if (height <= maxHeight) {
+					start = mid;
+				} else {
+					end = mid;
+				}
+			}
+			
+			// avoid trimming everything, or nothing
+			if (end > 0) {
+				return original.substring(0, mid+1);
+			}
+			
         }
         
         function applyEllipsis(elem, str) {
@@ -266,5 +210,5 @@
         }
     }
 
-    window.$clamp = clamp;
+    window.$clampv1 = clamp;
 })();
